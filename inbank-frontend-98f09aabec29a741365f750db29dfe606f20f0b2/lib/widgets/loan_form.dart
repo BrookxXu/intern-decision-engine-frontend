@@ -24,6 +24,7 @@ class _LoanFormState extends State<LoanForm> {
   String _nationalId = '';
   int _loanAmount = 2500;
   int _loanPeriod = 36;
+  int _age = 18;
   int _loanAmountResult = 0;
   int _loanPeriodResult = 0;
   String _errorMessage = '';
@@ -33,7 +34,7 @@ class _LoanFormState extends State<LoanForm> {
   void _submitForm() async {
     if (_formKey.currentState!.validate()) {
       final result = await _apiService.requestLoanDecision(
-          _nationalId, _loanAmount, _loanPeriod);
+          _nationalId, _loanAmount, _loanPeriod, _age);
       setState(() {
         int tempAmount = int.parse(result['loanAmount'].toString());
         int tempPeriod = int.parse(result['loanPeriod'].toString());
@@ -133,13 +134,52 @@ class _LoanFormState extends State<LoanForm> {
                   Slider.adaptive(
                     value: _loanPeriod.toDouble(),
                     min: 12,
-                    max: 60,
-                    divisions: 40,
+                    max: 48,
+                    divisions: 36,
                     label: '$_loanPeriod months',
                     activeColor: AppColors.secondaryColor,
                     onChanged: (double newValue) {
                       setState(() {
                         _loanPeriod = ((newValue.floor() / 6).round() * 6);
+                        _submitForm();
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: const [
+                      Expanded(
+                        child: Padding(
+                          padding: EdgeInsets.only(left: 12),
+                          child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('6 months')),
+                        ),
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: EdgeInsets.only(right: 12),
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: Text('48 months'),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                  const SizedBox(height: 24.0),
+                  Text('Age: $_age years old'),
+                  const SizedBox(height: 8),
+                  Slider.adaptive(
+                    value: _age.toDouble(),
+                    min: 0,
+                    max: 120,
+                    divisions: 120,
+                    label: '$_age years old',
+                    activeColor: AppColors.secondaryColor,
+                    onChanged: (double newValue) {
+                      setState(() {
+                        _age = ((newValue.floor() / 6).round() * 6);
                         _submitForm();
                       });
                     },
